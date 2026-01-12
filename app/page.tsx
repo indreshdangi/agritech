@@ -1,11 +1,13 @@
 "use client";
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import { ShoppingCart, Menu, Search, User, ArrowRight, Leaf, Play, Sun, Moon, X, Heart, Star, LayoutDashboard, Package, ShoppingBag, Plus, Trash2, Phone, GraduationCap, TrendingUp, Sprout } from 'lucide-react';
+import { ShoppingCart, Search, User, ArrowRight, Leaf, Play, Sun, Moon, X, Heart, Star, LayoutDashboard, Package, ShoppingBag, Plus, Trash2, Phone, GraduationCap, TrendingUp, Sprout } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// --- 1. CONTEXT & LOGIC ---
+// --- TYPES (Safety First) ---
 type Product = { id: number; name: string; price: string; stock: string; image: string; };
 type Order = { id: number; customer: string; items: string; total: number; status: string; date: string; };
+type Story = { id: number; name: string; loc: string; img: string; videoMsg?: string; }; // Added Story Type
+
 type GlobalContextType = {
   products: Product[]; cart: Product[]; orders: Order[]; currentPage: string; isDark: boolean;
   toggleTheme: () => void; navigateTo: (page: string) => void; addProduct: (product: Product) => void;
@@ -29,7 +31,10 @@ function GlobalProvider({ children }: { children: React.ReactNode }) {
   const [orders, setOrders] = useState<Order[]>([]);
 
   const toggleTheme = () => setIsDark(!isDark);
-  const navigateTo = (page: string) => { window.scrollTo({ top: 0, behavior: 'smooth' }); setCurrentPage(page); };
+  const navigateTo = (page: string) => { 
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' }); 
+    setCurrentPage(page); 
+  };
   const addProduct = (product: Product) => setProducts([...products, product]);
   const deleteProduct = (id: number) => setProducts(products.filter((p) => p.id !== id));
   const addToCart = (product: Product) => { setCart([...cart, product]); };
@@ -53,9 +58,7 @@ const useGlobal = () => {
   return context;
 };
 
-// --- 2. COMPONENTS ---
-
-// Navbar with Tricolor Top Border
+// Navbar
 const Navbar = () => {
   const { cart, isDark, toggleTheme, navigateTo, currentPage } = useGlobal();
   const [scrolled, setScrolled] = useState(false);
@@ -107,12 +110,10 @@ const Navbar = () => {
   );
 };
 
-// --- 3. PAGES ---
-
 // Home Page
 const HomePage = () => {
   const { navigateTo } = useGlobal();
-  const [activeStory, setActiveStory] = useState<any>(null);
+  const [activeStory, setActiveStory] = useState<Story | null>(null);
 
   return (
     <div className="min-h-screen bg-[#f8fafc] dark:bg-[#050b14] transition-colors duration-500 font-sans text-gray-800 dark:text-gray-100 overflow-x-hidden">
@@ -120,7 +121,10 @@ const HomePage = () => {
       {/* Hero Section */}
       <section className="relative w-full min-h-[100vh] flex items-center overflow-hidden pt-20">
         <div className="absolute inset-0 z-0">
-            <img 
+            <motion.img 
+              initial={{ scale: 1.1 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 10 }}
               src="https://images.unsplash.com/photo-1625246333195-551e5051d957?q=80&w=2000&auto=format&fit=crop" 
               className="w-full h-full object-cover opacity-90 dark:opacity-60" 
               alt="Indian Farm"
@@ -128,14 +132,13 @@ const HomePage = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent"></div>
         </div>
         
-        {/* Animated Blobs (Tiranga Colors) */}
         <div className="absolute top-20 left-10 w-72 h-72 bg-[#FF9933] rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-float"></div>
         <div className="absolute bottom-20 right-10 w-72 h-72 bg-[#138808] rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-float"></div>
 
         <div className="relative z-10 container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.8 }}>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/30 bg-white/10 backdrop-blur-md text-white text-sm font-bold mb-6">
-              <img src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" className="w-6 h-4 rounded shadow-sm" alt="India Flag"/>
+              <span className="w-4 h-3 bg-gradient-to-b from-[#FF9933] via-white to-[#138808] rounded-sm"></span>
               Proudly Made in India 🇮🇳
             </div>
             <h1 className="text-5xl md:text-7xl font-extrabold leading-tight text-white mb-6 drop-shadow-2xl">
@@ -151,13 +154,12 @@ const HomePage = () => {
               <button onClick={() => navigateTo('shop')} className="bg-gradient-to-r from-[#FF9933] to-[#FF8000] text-white px-8 py-4 rounded-full font-bold shadow-lg hover:shadow-[#FF9933]/50 flex items-center gap-2 transition-all transform hover:scale-105">
                 Kharidari Karein <ArrowRight className="w-5 h-5" />
               </button>
-              <button className="bg-white/10 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-full font-bold hover:bg-white/20 transition-all flex items-center gap-2">
+              <button onClick={() => navigateTo('farmers')} className="bg-white/10 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-full font-bold hover:bg-white/20 transition-all flex items-center gap-2">
                 <Play className="w-4 h-4 fill-current" /> Hamari Pahal
               </button>
             </div>
           </motion.div>
 
-          {/* Floating Glass Card */}
           <div className="hidden md:block relative h-[500px]">
              <motion.div 
                animate={{ y: [0, -20, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -179,7 +181,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* FOUNDERS SECTION (NEW) */}
+      {/* FOUNDERS SECTION */}
       <section className="py-20 bg-white dark:bg-[#0a0f18] relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#FF9933] via-white to-[#138808] opacity-30"></div>
         <div className="container mx-auto px-6 text-center">
@@ -188,51 +190,29 @@ const HomePage = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
             
-            {/* Founder 1 - Kavita */}
-            <motion.div 
-              whileHover={{ y: -10 }}
-              className="bg-gray-50 dark:bg-gray-800/50 p-8 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-xl relative group overflow-hidden"
-            >
+            <motion.div whileHover={{ y: -10 }} className="bg-gray-50 dark:bg-gray-800/50 p-8 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-xl relative group overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-2 bg-[#138808]"></div>
-              <div className="w-24 h-24 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-6 text-4xl shadow-inner">
-                👩‍🎓
-              </div>
+              <div className="w-24 h-24 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-6 text-4xl shadow-inner">👩‍🎓</div>
               <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-1">Kavita Dangi</h3>
               <p className="text-[#138808] font-bold text-sm uppercase tracking-wider mb-4">Agriculture Student</p>
-              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed italic">
-                "Kheti sirf vyapaar nahi, ye humari sanskriti hai. Mera lakshya hai scientific tarikon se kisan ki aamdani badhana."
-              </p>
-              <div className="mt-6 flex justify-center gap-3 opacity-50">
-                 <Leaf className="w-5 h-5 text-[#138808]" />
-                 <GraduationCap className="w-5 h-5 text-[#138808]" />
-              </div>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed italic">"Kheti sirf vyapaar nahi, ye humari sanskriti hai. Mera lakshya hai scientific tarikon se kisan ki aamdani badhana."</p>
+              <div className="mt-6 flex justify-center gap-3 opacity-50"><Leaf className="w-5 h-5 text-[#138808]" /><GraduationCap className="w-5 h-5 text-[#138808]" /></div>
             </motion.div>
 
-            {/* Founder 2 - Indresh */}
-            <motion.div 
-              whileHover={{ y: -10 }}
-              className="bg-gray-50 dark:bg-gray-800/50 p-8 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-xl relative group overflow-hidden"
-            >
+            <motion.div whileHover={{ y: -10 }} className="bg-gray-50 dark:bg-gray-800/50 p-8 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-xl relative group overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-2 bg-[#FF9933]"></div>
-              <div className="w-24 h-24 mx-auto bg-orange-100 rounded-full flex items-center justify-center mb-6 text-4xl shadow-inner">
-                👨‍💻
-              </div>
+              <div className="w-24 h-24 mx-auto bg-orange-100 rounded-full flex items-center justify-center mb-6 text-4xl shadow-inner">👨‍💻</div>
               <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-1">Indresh Dangi</h3>
               <p className="text-[#FF9933] font-bold text-sm uppercase tracking-wider mb-4">Founder & Visionary</p>
-              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed italic">
-                "Technology aur Mitti ka sangam hi naye Bharat ki pehchan hai. Hum gaon ko global market se jod rahe hain."
-              </p>
-              <div className="mt-6 flex justify-center gap-3 opacity-50">
-                 <TrendingUp className="w-5 h-5 text-[#FF9933]" />
-                 <Sprout className="w-5 h-5 text-[#FF9933]" />
-              </div>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed italic">"Technology aur Mitti ka sangam hi naye Bharat ki pehchan hai. Hum gaon ko global market se jod rahe hain."</p>
+              <div className="mt-6 flex justify-center gap-3 opacity-50"><TrendingUp className="w-5 h-5 text-[#FF9933]" /><Sprout className="w-5 h-5 text-[#FF9933]" /></div>
             </motion.div>
 
           </div>
         </div>
       </section>
 
-      {/* Stories Section (Insta Style) */}
+      {/* Stories Section */}
       <section className="py-16 container mx-auto px-6">
         <h2 className="text-3xl font-bold dark:text-white mb-8 flex items-center gap-3">
           <span className="w-1 h-8 bg-[#FF9933]"></span>
@@ -253,24 +233,15 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer className="bg-[#050b14] text-white py-12 border-t-4 border-[#FF9933]">
          <div className="container mx-auto px-6 text-center">
-            <div className="mb-6 flex justify-center items-center gap-2">
-               <Sprout className="text-[#138808]" /> 
-               <span className="text-2xl font-bold">IND<span className="text-[#FF9933]">Agri.</span></span>
-            </div>
+            <div className="mb-6 flex justify-center items-center gap-2"><Sprout className="text-[#138808]" /> <span className="text-2xl font-bold">IND<span className="text-[#FF9933]">Agri.</span></span></div>
             <p className="text-gray-400 mb-8 max-w-md mx-auto">"Jai Jawan, Jai Kisan, Jai Vigyan". <br/> Empowering Indian Agriculture through Innovation.</p>
-            <div className="flex justify-center gap-8 text-sm text-gray-500 mb-8">
-               <span>Founder: Indresh Dangi</span>
-               <span>•</span>
-               <span>Expertise: Kavita Dangi</span>
-            </div>
+            <div className="flex justify-center gap-8 text-sm text-gray-500 mb-8"><span>Founder: Indresh Dangi</span><span>•</span><span>Expertise: Kavita Dangi</span></div>
             <p className="text-xs text-gray-600">© 2026 IND Agritech Pvt Ltd. Made with ❤️ in India.</p>
          </div>
       </footer>
 
-      {/* Modal Logic */}
       <AnimatePresence>
         {activeStory && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-md flex items-center justify-center p-4" onClick={() => setActiveStory(null)}>
@@ -307,7 +278,7 @@ const ShopPage = () => {
           {products.map((product) => (
              <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} whileHover={{ y: -10 }} className="bg-white dark:bg-white/5 backdrop-blur-md rounded-3xl p-4 border border-gray-100 dark:border-gray-800 hover:shadow-2xl transition-all group">
                <div className="h-48 rounded-2xl overflow-hidden mb-4 relative">
-                 <div className="absolute top-2 right-2 bg-white/90 p-1 rounded-full z-10"><img src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" className="w-4 h-3 rounded-sm"/></div>
+                 <div className="absolute top-2 right-2 bg-white/90 p-1 rounded-full z-10"><span className="w-4 h-3 bg-gradient-to-b from-[#FF9933] via-white to-[#138808] block rounded-sm"></span></div>
                  <img src={product.image} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" />
                </div>
                <h3 className="text-lg font-bold text-gray-800 dark:text-white">{product.name}</h3>
@@ -320,7 +291,6 @@ const ShopPage = () => {
           ))}
         </div>
       </div>
-      {/* Cart Drawer */}
       <AnimatePresence>
         {isCartOpen && (
           <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} className="fixed inset-y-0 right-0 w-full md:w-96 bg-white dark:bg-gray-900 shadow-2xl z-[70] p-6 border-l dark:border-gray-800">
@@ -354,7 +324,7 @@ const FarmersPage = () => {
   );
 };
 
-// Admin Page (Simplified for UI)
+// Admin Page
 const AdminPage = () => {
   const { products, deleteProduct, navigateTo, addProduct } = useGlobal();
   const [newProd, setNewProd] = useState({ name: "", price: "", stock: "", image: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=400" });
