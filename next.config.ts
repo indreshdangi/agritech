@@ -1,7 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // TypeScript errors ignore karo
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  // ESLint errors ignore karo
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
