@@ -2,7 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Scrollbar (Patli aur Sundar) */
+/* Smooth Scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -10,19 +15,11 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #166534;
+  background: #166534; /* Green */
   border-radius: 10px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #15803d;
-}
 
-/* Smooth Scroll behavior */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Glass Card Utilities */
+/* Glass Effect */
 .glass-panel {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
@@ -34,14 +31,21 @@ html {
 .dark .glass-panel {
   background: rgba(20, 20, 20, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
 
-/* Hide Scrollbar for Stories */
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
 }
-.scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
 }
