@@ -1,12 +1,12 @@
 "use client";
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import { ShoppingCart, Search, User, ArrowRight, Leaf, Play, Sun, Moon, X, Heart, Star, LayoutDashboard, Package, ShoppingBag, Plus, Trash2, Phone, GraduationCap, TrendingUp, Sprout } from 'lucide-react';
+import { ShoppingCart, Menu, Search, User, ArrowRight, Leaf, Play, Sun, Moon, X, Heart, Star, LayoutDashboard, Package, ShoppingBag, Plus, Trash2, Phone, GraduationCap, TrendingUp, Sprout } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// --- TYPES (Safety First) ---
+// --- TYPES ---
 type Product = { id: number; name: string; price: string; stock: string; image: string; };
 type Order = { id: number; customer: string; items: string; total: number; status: string; date: string; };
-type Story = { id: number; name: string; loc: string; img: string; videoMsg?: string; }; // Added Story Type
+type Story = { id: number; name: string; loc: string; img: string; videoMsg?: string; };
 
 type GlobalContextType = {
   products: Product[]; cart: Product[]; orders: Order[]; currentPage: string; isDark: boolean;
@@ -132,6 +132,7 @@ const HomePage = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent"></div>
         </div>
         
+        {/* Animated Blobs (Tiranga Colors) */}
         <div className="absolute top-20 left-10 w-72 h-72 bg-[#FF9933] rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-float"></div>
         <div className="absolute bottom-20 right-10 w-72 h-72 bg-[#138808] rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-float"></div>
 
@@ -160,6 +161,7 @@ const HomePage = () => {
             </div>
           </motion.div>
 
+          {/* Floating Glass Card */}
           <div className="hidden md:block relative h-[500px]">
              <motion.div 
                animate={{ y: [0, -20, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
